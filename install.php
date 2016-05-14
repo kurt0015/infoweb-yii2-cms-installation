@@ -265,7 +265,13 @@ class Installation {
             }
 
             $config = array_merge($currentConfig, Templates::get($template));
-            $contents = ArrayHelper::arrayToCode( $config, true );
+            $contents = <<<EOD
+<?php
+
+return 
+EOD;
+
+            $contents .= ArrayHelper::arrayToCode( $config, true );
             $database = ($template == '/environments/prod/common/config/main-local.php') ? $this->database : $this->dev_database;
 
             // overwrite files with default configuration;
