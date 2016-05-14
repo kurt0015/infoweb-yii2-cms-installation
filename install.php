@@ -141,7 +141,7 @@ class ArrayHelper {
                     $string .= "    \"$key\" => '$value',\n";
                 }
                 elseif (is_bool($value)) {
-                    $string .= "    \"$key\" => bool ".(($value) ? 'true' : 'false').",\n";
+                    $string .= "    \"$key\" => (bool) ".(($value) ? 'true' : 'false').",\n";
                 }
                 else {
                     var_dump($value);
