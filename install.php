@@ -304,6 +304,8 @@ class Installation {
             '/frontend/web/uploads/files/.gitignore' => CURRENT_PATH . '/' . $this->project_name . '/frontend/web/uploads/files'
         ];
 
+        mkdir(CURRENT_PATH . '/' . $this->project_name . '/frontend/web/uploads', 777);
+
         foreach($createFolders as $template => $createFolder) {
             $gitignore = Templates::get($template);
             mkdir($createFolder, 777);
