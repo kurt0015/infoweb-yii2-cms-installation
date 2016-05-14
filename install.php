@@ -298,10 +298,10 @@ EOD;
             exec($cd.' && composer config preferred-install source');
         }
 
-        exec($cd.' && composer require fishvision/yii2-migrate && composer require infoweb-internet-solutions/yii2-cms');
+        exec($cd.' && composer config repositories.i18n vcs https://github.com/infoweb-internet-solutions/yii2-i18n-module');
+        exec($cd.' && composer config repositories.ckeditor vcs https://github.com/infoweb-internet-solutions/yii2-ckeditor');
 
-        exec($cd.' && composer config repositories vcs https://github.com/infoweb-internet-solutions/yii2-i18n-module');
-        exec($cd.' && composer config repositories vcs https://github.com/infoweb-internet-solutions/yii2-ckeditor');
+        exec($cd.' && composer require fishvision/yii2-migrate:* && composer require infoweb-internet-solutions/yii2-cms');
     }
     
     public function createFolders() {
