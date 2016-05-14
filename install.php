@@ -99,14 +99,20 @@ class Interaction {
 }
 
 class ArrayHelper {
-    public static function arrayToCode($array, $return = true) {
-        if(count($array) == 0) {
+    public static function arrayToCode($array, $return = true, $loop = 0) {
+        $spaces = '    ';
+        $startFormatting = '';
+        for ($x = 0; $x <= $loop; $x++) {
+            $startFormatting .= $spaces;
+        }
+
+        if(is_array($array) && count($array) == 0) {
             if (!$return) {
-                print "[]";
+                print $startFormatting . "[]";
                 return true;
             }
 
-            return "[]";
+            return $startFormatting . "[]";
         }
 
         $string = "[";
@@ -117,10 +123,11 @@ class ArrayHelper {
                     $string .= "$value, ";
                 }
                 elseif (is_array($value)) {
-                    $string .= printArrayInPHPFormat($value, true) . ",\n";
+                    $loop++;
+                    $string .= self::arrayToCode($value, true, $loop) . ",\n";
                 }
                 elseif (is_string($value)) {
-                    $string .= "$value', ";
+                    $string .= "'$value', ";
                 }
                 else {
                     trigger_error("Unsupported type of \$value, in index $key.");
@@ -132,16 +139,17 @@ class ArrayHelper {
             foreach ($array as $key => $value) {
                 $no_keys = false;
                 if (is_int($value)) {
-                    $string .= "    \"$key\" => $value,\n";
+                    $string .= $startFormatting . "\"$key\" => $value,\n";
                 }
                 elseif (is_array($value)) {
-                    $string .= "    \"$key\" => " . self::arrayToCode($value, true) . ",\n";
+                    $loop++;
+                    $string .= $startFormatting . "\"$key\" => " . self::arrayToCode($value, true, $loop) . ",\n";
                 }
                 elseif (is_string($value)) {
-                    $string .= "    \"$key\" => '$value',\n";
+                    $string .= $startFormatting . "\"$key\" => '$value',\n";
                 }
                 elseif (is_bool($value)) {
-                    $string .= "    \"$key\" => (bool) ".(($value) ? 'true' : 'false').",\n";
+                    $string .= $startFormatting . "\"$key\" => (bool) ".(($value) ? 'true' : 'false').",\n";
                 }
                 else {
                     var_dump($value);
@@ -155,7 +163,8 @@ class ArrayHelper {
         if (!$no_keys) {
             $string .= "\n";
         }
-        $string .= "]";
+
+        $string .= (array_values($array) === $array) ? "]" : $startFormatting . "]";
 
         if (!$return) {
             print $string;
@@ -193,7 +202,7 @@ class Installation {
         $this->database['port'] = Interaction::input('Production database port (default: 3306):', '3306');
         $this->database['name'] = Interaction::input('Production database name:', '', true);
         $this->database['user'] = Interaction::input('Production database user:', '', true);
-        $this->database['password'] = Interaction::input('Production database password?', '', true);
+        $this->database['password'] = Interaction::input('Production database password:', '', true);
         
         $this->dev_database = [];
 
@@ -202,7 +211,7 @@ class Installation {
             $this->dev_database['port'] = Interaction::input('Development database port (default: 3306):', '3306');
             $this->dev_database['name'] = Interaction::input('Development database name:', '', true);
             $this->dev_database['user'] = Interaction::input('Development database user:', '', true);
-            $this->dev_database['password'] = Interaction::input('Development database password?', '', true);
+            $this->dev_database['password'] = Interaction::input('Development database password:', '', true);
         }
         else {
             $this->dev_database['host'] = $this->database['host'];
