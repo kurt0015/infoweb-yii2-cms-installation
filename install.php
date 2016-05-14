@@ -140,7 +140,12 @@ class ArrayHelper {
                 elseif (is_string($value)) {
                     $string .= "\"$key\" => '$value',\n";
                 }
+                elseif (is_bool($value)) {
+                    $string .= "\"$key\" => bool ".(($value) ? 'true' : 'false').",\n";
+                }
                 else {
+                    var_dump($value);
+                    exit;
                     trigger_error("Unsupported type of \$value, in index $key.");
                 }
             }
@@ -176,8 +181,8 @@ class Installation {
     }
 
     public function gatherNeededInformation() {
-        $this->project_name = Interaction::input('Project directory name:?');
-        $this->include_git = Interaction::input('Include GIT folder? y or n', 'n');
+        $this->project_name = Interaction::input('Project directory name:');
+        $this->include_git = Interaction::input('Include GIT folder? y or n (default: n):', 'n');
         $this->_datababaseCredentials();
     }
 
@@ -185,19 +190,19 @@ class Installation {
         $this->database = [];
 
         $this->database['host'] = Interaction::input('Production database host (default: localhost):', 'localhost');
-        $this->database['port'] = Interaction::input('Production database port? (default: 3306):', '3306');
+        $this->database['port'] = Interaction::input('Production database port (default: 3306):', '3306');
         $this->database['name'] = Interaction::input('Production database name:', '', true);
-        $this->database['user'] = Interaction::input('Production database user: ', '', true);
-        $this->database['password'] = Interaction::input('Production database password? ', '', true);
+        $this->database['user'] = Interaction::input('Production database user:', '', true);
+        $this->database['password'] = Interaction::input('Production database password?', '', true);
         
         $this->dev_database = [];
 
         if(Interaction::input('Use the same database credentails for development? y or n (default: y):', 'y') == 'n') {
             $this->dev_database['host'] = Interaction::input('Development database host (default: localhost):', 'localhost');
-            $this->dev_database['port'] = Interaction::input('Development database port? (default: 3306):', '3306');
+            $this->dev_database['port'] = Interaction::input('Development database port (default: 3306):', '3306');
             $this->dev_database['name'] = Interaction::input('Development database name:', '', true);
-            $this->dev_database['user'] = Interaction::input('Development database user: ', '', true);
-            $this->dev_database['password'] = Interaction::input('Development database password? ', '', true);
+            $this->dev_database['user'] = Interaction::input('Development database user:', '', true);
+            $this->dev_database['password'] = Interaction::input('Development database password?', '', true);
         }
         else {
             $this->dev_database['host'] = $this->database['host'];
@@ -240,7 +245,7 @@ class Installation {
     }
 
     public function composer() {
-        exec('composer global require "fxp/composer-asset-plugin:~1.0" --no-Interaction && composer create-project --prefer-dist --stability=dev yiisoft/yii2-app-advanced "'.addslashes($this->project_name).'" --no-Interaction');
+        exec('composer global require "fxp/composer-asset-plugin:~1.0" --no-interaction && composer create-project --prefer-dist --stability=dev yiisoft/yii2-app-advanced "'.addslashes($this->project_name).'" --no-interaction');
     }
 
     public function configFiles() {
