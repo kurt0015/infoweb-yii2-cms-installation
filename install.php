@@ -271,7 +271,7 @@ class Installation {
 return 
 EOD;
 
-            $contents .= ArrayHelper::arrayToCode( $config, true );
+            $contents .= ArrayHelper::arrayToCode( $config, true ).';';
             $database = ($template == '/environments/prod/common/config/main-local.php') ? $this->database : $this->dev_database;
 
             // overwrite files with default configuration;
