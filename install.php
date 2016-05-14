@@ -132,16 +132,16 @@ class ArrayHelper {
             foreach ($array as $key => $value) {
                 $no_keys = false;
                 if (is_int($value)) {
-                    $string .= "\"$key\" => $value,\n";
+                    $string .= "    \"$key\" => $value,\n";
                 }
                 elseif (is_array($value)) {
-                    $string .= "\"$key\" => " . self::arrayToCode($value, true) . ",\n";
+                    $string .= "    \"$key\" => " . self::arrayToCode($value, true) . ",\n";
                 }
                 elseif (is_string($value)) {
-                    $string .= "\"$key\" => '$value',\n";
+                    $string .= "    \"$key\" => '$value',\n";
                 }
                 elseif (is_bool($value)) {
-                    $string .= "\"$key\" => bool ".(($value) ? 'true' : 'false').",\n";
+                    $string .= "    \"$key\" => bool ".(($value) ? 'true' : 'false').",\n";
                 }
                 else {
                     var_dump($value);
