@@ -99,7 +99,7 @@ class Interaction {
 }
 
 class ArrayHelper {
-    public static function arrayToCode($array, $return = false) {
+    public static function arrayToCode($array, $return = true) {
         if(count($array) == 0) {
             if (!$return) {
                 print "[]";
@@ -265,7 +265,7 @@ class Installation {
             }
 
             $config = array_merge($currentConfig, Templates::get($template));
-            $contents = ArrayHelper::arrayToCode( $config );
+            $contents = ArrayHelper::arrayToCode( $config, true );
             $database = ($template == '/environments/prod/common/config/main-local.php') ? $this->database : $this->dev_database;
 
             // overwrite files with default configuration;
