@@ -14,6 +14,9 @@ You can run this script from the command line:
 php install.php
 ```
 
+Manual steps that need to be done:
+https://github.com/infoweb-internet-solutions/yii2-cms#docs
+
 ## Extra info
 This script will ask for all the needed parameters. If you want to add some extra configuration params you could edit the 'Templates' in the install.php file.
 
