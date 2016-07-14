@@ -569,8 +569,8 @@ class Installation {
      */
     public function configFiles() {
         $configFiles = [
-            DS.'environments'.DS.'dev'.DS.'common/config/main-local.php' => CURRENT_PATH . DS . $this->project_folder . DS . 'environments'.DS.'dev'.DS.'common'.DS.'config'.DS.'main-local.php',
-            DS.'environments'.DS.'prod'.DS.'common/config/main-local.php' => CURRENT_PATH . DS . $this->project_folder . DS . 'environments'.DS.'prod'.DS.'common'.DS.'config'.DS.'main-local.php',
+            DS.'environments'.DS.'dev'.DS.'common'.DS.'config'.DS.'main-local.php' => CURRENT_PATH . DS . $this->project_folder . DS . 'environments'.DS.'dev'.DS.'common'.DS.'config'.DS.'main-local.php',
+            DS.'environments'.DS.'prod'.DS.'common'.DS.'config'.DS.'main-local.php' => CURRENT_PATH . DS . $this->project_folder . DS . 'environments'.DS.'prod'.DS.'common'.DS.'config'.DS.'main-local.php',
         ];
 
         foreach($configFiles as $template => $configFile) {
