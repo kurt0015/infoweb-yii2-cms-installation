@@ -26,7 +26,9 @@ namespace kurt0015\installations;
  * 'class' => '{LITERAL@Zelenin\yii\modules\I18n\components\I18N::className()}' -> will be converted to 'class' => Zelenin\yii\modules\I18n\components\I18N::className()
  */
 
-Templates::add('/environments/prod/common/config/main-local.php', [
+define('DS', DIRECTORY_SEPARATOR);
+
+Templates::add(DS . 'environments'.DS.'prod'.DS.'common'.DS.'config'.DS.'main-local.php', [
     'components' => [
         'db' => [
             'class' => 'yii\db\Connection',
@@ -38,8 +40,8 @@ Templates::add('/environments/prod/common/config/main-local.php', [
     ]
 ]);
 
-Templates::add('/environments/dev/common/config/main-local.php', array_merge(
-    Templates::get('/environments/prod/common/config/main-local.php'),
+Templates::add(DS.'environments'.DS.'dev'.DS.'common'.DS.'config'.DS.'main-local.php', array_merge(
+    Templates::get(DS.'environments'.DS.'prod'.DS.'common'.DS.'config'.DS.'main-local.php'),
     [
         'controllerMap' => [
             'migrate' => [
@@ -53,15 +55,15 @@ Templates::add('/environments/dev/common/config/main-local.php', array_merge(
     ]
 ));
 
-Templates::add('/frontend/web/uploads/img/.gitignore', <<<EOD
+Templates::add(DS.'frontend'.DS.'web'.DS.'uploads'.DS.'img'.DS.'.gitignore', <<<EOD
 *
 !.gitignore
 EOD
 );
 
-Templates::add('/frontend/web/uploads/files/.gitignore', Templates::get('/frontend/web/uploads/img/.gitignore') );
+Templates::add(DS.'frontend'.DS.'web'.DS.'uploads'.DS.'files'.DS.'.gitignore', Templates::get(DS.'frontend'.DS.'web'.DS.'uploads'.DS.'img'.DS.'.gitignore') );
 
-Templates::add('/common/config/main.php', [
+Templates::add(DS.'common'.DS.'config'.DS.'main.php', [
     'name' => '{PROJECT_NAME}',
     'language' => 'nl',
     'timeZone' => 'Europe/Brussels',
@@ -189,7 +191,7 @@ Templates::add('/common/config/main.php', [
     ],
 ]);
 
-Templates::add('/backend/config/main.php', [
+Templates::add(DS.'backend'.DS.'config'.DS.'main.php', [
     'name' => '{PROJECT_NAME}',
     'bootstrap' => ['log','cms'],
     'modules' => [
@@ -248,14 +250,14 @@ Templates::add('/backend/config/main.php', [
     ]
 ]);
 
-Templates::add('/backend/config/params.php', [
+Templates::add(DS.'backend'.DS.'config'.DS.'params.php', [
     // Moximanager settings
     'moxiemanager'  => [
         'license-key'   => 'your-moxiemanager-key'
     ],
 ]);
 
-Templates::add('/common/config/params.php', [
+Templates::add(DS.'common'.DS.'config'.DS.'params.php', [
     // Enabled languages
     'languages' => [
         'nl'    => 'Nederlands',
@@ -265,7 +267,7 @@ Templates::add('/common/config/params.php', [
     'companyName'   => '{PROJECT_NAME}'
 ]);
 
-Templates::add('/frontend/config/main.php', [
+Templates::add(DS.'frontend'.DS.'config'.DS.'main.php', [
     'components' => [
         'user' => [
             'identityClass' => 'infoweb\user\models\frontend\User',
@@ -461,8 +463,8 @@ class Installation {
     }
 
     public function gatherNeededInformation() {
-        if(file_exists(CURRENT_PATH.'/config.php')) {
-            $configuration = include(CURRENT_PATH . '/config.php');
+        if(file_exists(CURRENT_PATH.DS.'config.php')) {
+            $configuration = include(CURRENT_PATH . DS . 'config.php');
 
             foreach($configuration as $key => $parameter) {
                 $this->$key = $parameter;
@@ -523,8 +525,8 @@ class Installation {
     }
 
     public function checks() {
-        if(!file_exists(CURRENT_PATH . '/'. $this->project_folder)) {
-            if(!@mkdir(CURRENT_PATH . '/'. $this->project_folder, 755)) {
+        if(!file_exists(CURRENT_PATH . DS . $this->project_folder)) {
+            if(!@mkdir(CURRENT_PATH . DS . $this->project_folder, 755)) {
                 if(Interaction::input('Can\'t create directory "'.CURRENT_PATH . '/'. $this->project_folder.'". Please check permissions. Retry? y or n') == 'y') {
                     $this->__construct(false);
                 }
@@ -567,8 +569,8 @@ class Installation {
      */
     public function configFiles() {
         $configFiles = [
-            '/environments/dev/common/config/main-local.php' => CURRENT_PATH . '/'. $this->project_folder . '/environments/dev/common/config/main-local.php',
-            '/environments/prod/common/config/main-local.php' => CURRENT_PATH . '/'. $this->project_folder . '/environments/prod/common/config/main-local.php',
+            DS.'environments'.DS.'dev'.DS.'common/config/main-local.php' => CURRENT_PATH . DS . $this->project_folder . DS . 'environments'.DS.'dev'.DS.'common'.DS.'config'.DS.'main-local.php',
+            DS.'environments'.DS.'prod'.DS.'common/config/main-local.php' => CURRENT_PATH . DS . $this->project_folder . DS . 'environments'.DS.'prod'.DS.'common'.DS.'config'.DS.'main-local.php',
         ];
 
         foreach($configFiles as $template => $configFile) {
@@ -589,7 +591,7 @@ return
 EOD;
 
             $contents .= ArrayHelper::arrayToCode( $config, true ).';';
-            $database = ($template == '/environments/prod/common/config/main-local.php') ? $this->database : $this->dev_database;
+            $database = ($template == DS.'environments'.DS.'prod'.DS.'common'.DS.'config'.DS.'main-local.php') ? $this->database : $this->dev_database;
 
             // overwrite files with default configuration;
             $contents = str_replace([
@@ -617,7 +619,7 @@ EOD;
      * Update composer.json file
      */
     public function composerComponents() {
-        $cd = 'cd '.CURRENT_PATH . '/'. $this->project_folder . '/';
+        $cd = 'cd '.CURRENT_PATH . DS . $this->project_folder . DS;
 
         if($this->include_git == 'y') {
             exec($cd.' && composer config preferred-install source');
@@ -634,16 +636,16 @@ EOD;
      */
     public function createFolders() {
         $createFolders = [
-            '/frontend/web/uploads/img/.gitignore' => CURRENT_PATH . '/' . $this->project_folder . '/frontend/web/uploads/img',
-            '/frontend/web/uploads/files/.gitignore' => CURRENT_PATH . '/' . $this->project_folder . '/frontend/web/uploads/files'
+            DS.'frontend'.DS.'web'.DS.'uploads'.DS.'img'.DS.'.gitignore' => CURRENT_PATH . DS . $this->project_folder . DS . 'frontend'.DS.'web'.DS.'uploads'.DS.'img',
+            DS.'frontend'.DS.'web'.DS.'uploads'.DS.'files'.DS.'.gitignore' => CURRENT_PATH . DS . $this->project_folder . DS . 'frontend'.DS.'web'.DS.'uploads'.DS.'files'
         ];
 
-        mkdir(CURRENT_PATH . '/' . $this->project_folder . '/frontend/web/uploads', 777);
+        mkdir(CURRENT_PATH . DS . $this->project_folder . DS . 'frontend'.DS.'web'.DS.'uploads', 777);
 
         foreach($createFolders as $template => $createFolder) {
             $gitignore = Templates::get($template);
             mkdir($createFolder, 777);
-            file_put_contents($createFolder . '/.gitignore', $gitignore);
+            file_put_contents($createFolder . DS . '.gitignore', $gitignore);
         }
     }
 
@@ -652,10 +654,10 @@ EOD;
      */
     public function initEnvironment() {
         $files = [
-            '/common/config/params.php' => CURRENT_PATH . '/' . $this->project_folder . '/common/config/params.php',
-            '/backend/config/params.php' => CURRENT_PATH . '/' . $this->project_folder . '/backend/config/params.php',
-            '/frontend/config/params.php' => CURRENT_PATH . '/' . $this->project_folder . '/frontend/config/params.php',
-            '/console/config/params.php' => CURRENT_PATH . '/' . $this->project_folder . '/console/config/params.php'
+            DS.'common'.DS.'config'.DS.'params.php' => CURRENT_PATH . DS . $this->project_folder . DS . 'common'.DS.'config'.DS.'params.php',
+            DS.'backend'.DS.'config'.DS.'params.php' => CURRENT_PATH . DS . $this->project_folder . DS . 'backend'.DS.'config'.DS.'params.php',
+            DS.'frontend'.DS.'config'.DS.'params.php' => CURRENT_PATH . DS . $this->project_folder . DS . 'frontend'.DS.'config'.DS.'params.php',
+            DS.'console'.DS.'config'.DS.'params.php' => CURRENT_PATH . DS . $this->project_folder . DS . 'console'.DS.'config'.DS.'params.php'
         ];
 
         foreach($files as $file) {
@@ -677,7 +679,7 @@ EOD;
             }
         }
 
-        $cd = 'cd '.CURRENT_PATH . '/'. $this->project_folder . '/';
+        $cd = 'cd '.CURRENT_PATH . DS . $this->project_folder . DS;
         exec($cd.' && php yii --env=Production --overwrite=All');
     }
     
@@ -687,11 +689,11 @@ EOD;
     */
     public function extension() {
         $files = [
-            '/common/config/main.php' => CURRENT_PATH . '/' . $this->project_folder . '/common/config/main.php',
-            '/backend/config/main.php' => CURRENT_PATH . '/' . $this->project_folder . '/backend/config/main.php',
-            '/backend/config/params.php' => CURRENT_PATH . '/' . $this->project_folder . '/backend/config/params.php',
-            '/common/config/params.php' => CURRENT_PATH . '/' . $this->project_folder . '/common/config/params.php',
-            '/frontend/config/main.php' => CURRENT_PATH . '/' . $this->project_folder . '/frontend/config/main.php',
+            DS . 'common'.DS.'config'.DS.'main.php' => CURRENT_PATH . DS . $this->project_folder . DS . 'common'.DS.'config'.DS.'main.php',
+            DS . 'backend'.DS.'config'.DS.'main.php' => CURRENT_PATH . DS . $this->project_folder . DS . 'backend'.DS.'config'.DS.'main.php',
+            DS . 'backend'.DS.'config'.DS.'params.php' => CURRENT_PATH . DS . $this->project_folder . DS . 'backend'.DS.'config'.DS.'params.php',
+            DS . 'common'.DS.'config'.DS.'params.php' => CURRENT_PATH . DS . $this->project_folder . DS . 'common'.DS.'config'.DS.'params.php',
+            DS . 'frontend'.DS.'config'.DS.'main.php' => CURRENT_PATH . DS . $this->project_folder . DS . 'frontend'.DS.'config'.DS.'main.php',
         ];
 
          foreach($files as $template => $file) {
