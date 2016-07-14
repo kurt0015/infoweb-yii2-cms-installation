@@ -461,11 +461,20 @@ class Installation {
     }
 
     public function gatherNeededInformation() {
-        $this->project_name = Interaction::input('Project name:', '', true);
-        $this->project_folder = Interaction::input('Project directory:', '', true);
-        $this->include_git = Interaction::input('Include GIT folder? y or n (default: n):', 'n');
-        $this->_email();
-        $this->_datababaseCredentials();
+        if(file_exists(CURRENT_PATH.'/config.php')) {
+            $configuration = include(CURRENT_PATH . '/config.php');
+
+            foreach($configuration as $key => $parameter) {
+                $this->$key = $parameter;
+            }
+        }
+        else {
+            $this->project_name = Interaction::input('Project name:', '', true);
+            $this->project_folder = Interaction::input('Project directory:', '', true);
+            $this->include_git = Interaction::input('Include GIT folder? y or n (default: n):', 'n');
+            $this->_email();
+            $this->_datababaseCredentials();
+        }
     }
     
     public function _email() {
@@ -594,6 +603,11 @@ EOD;
                 $database['user'],
                 $database['password']
             ], $contents);
+
+            $configDirectory = pathinfo($configFile, PATHINFO_DIRNAME);
+            if (!file_exists($configDirectory)) {
+                mkdir($configDirectory, 0755, true);
+            }
 
             file_put_contents($configFile, $contents);
         }
