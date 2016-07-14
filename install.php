@@ -393,22 +393,30 @@ class ArrayHelper {
             foreach ($array as $key => $value) {
                 $no_keys = false;
 
+				if(is_string($key) && substr($key, 0, 9) == '{LITERAL@') {
+					$key = rtrim(substr($key, 9), '}');
+					$key = "$key";
+				}
+				else {
+					$key = "\"$key\"";
+				}
+
                 if(is_string($value) && substr($value, 0, 9) == '{LITERAL@') {
                     $literal = rtrim(substr($value, 9), '}');
-                    $string .= $startFormatting . "\"$key\" => $literal,\n";
+                    $string .= $startFormatting . $key . " => $literal,\n";
                 }
                 elseif (is_int($value)) {
-                    $string .= $startFormatting . "\"$key\" => $value,\n";
+                    $string .= $startFormatting . $key . " => $value,\n";
                 }
                 elseif (is_array($value)) {
                     $loop++;
-                    $string .= $startFormatting . "\"$key\" => " . self::arrayToCode($value, true, $loop) . ",\n";
+                    $string .= $startFormatting . $key . " => " . self::arrayToCode($value, true, $loop) . ",\n";
                 }
                 elseif (is_string($value)) {
-                    $string .= $startFormatting . "\"$key\" => '$value',\n";
+                    $string .= $startFormatting . $key . " => '$value',\n";
                 }
                 elseif (is_bool($value)) {
-                    $string .= $startFormatting . "\"$key\" => (bool) ".(($value) ? 'true' : 'false').",\n";
+                    $string .= $startFormatting . $key . " => (bool) ".(($value) ? 'true' : 'false').",\n";
                 }
                 else {
                     var_dump($value);
