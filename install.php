@@ -6,20 +6,20 @@ namespace kurt0015\installations;
 /**
  * @Author: Kurt Aerts <me@kurtaerts.be>
  * @Copyright: 2016
- * 
+ *
  * This installation file makes it faster to install
  * the infoweb CMS.
- * 
+ *
  * REQUIRED
  * - Composer global installation
  * - run commands using exec
- * 
+ *
  * Complete installation instructions:
  * https://github.com/infoweb-internet-solutions/yii2-cms
- * 
+ *
  * Below you can configure you're installation config files
  * It will help you to add some default values to you're configuration
- * 
+ *
  * Templates special syntax
  * '{USE@\kartik\datecontrol\Module}' => true -> will be converted to use \kartik\datecontrol\Module;
  * '{LITERAL@\kartik\datecontrol\Module::FORMAT_DATE}' => 'php:d-m-Y' ->  will be converted to Module::FORMAT_DATE => 'php:d-m-Y'
@@ -307,10 +307,10 @@ Templates::add(DS.'frontend'.DS.'config'.DS.'main.php', [
 ]);
 
 /**
- * 
+ *
  * Classes and stuff that is needed
  * you do not need to edit anything below this comment.
- * 
+ *
  */
 define('CURRENT_PATH', realpath(dirname(__FILE__)));
 
@@ -478,7 +478,7 @@ class Installation {
             $this->_datababaseCredentials();
         }
     }
-    
+
     public function _email() {
         $this->email = [];
         $this->email['from'] = Interaction::input('Production email from (default: noreply@infoweb.be):', 'noreply@infoweb.be');
@@ -505,7 +505,7 @@ class Installation {
         $this->database['name'] = Interaction::input('Production database name:', '', true);
         $this->database['user'] = Interaction::input('Production database user:', '', true);
         $this->database['password'] = Interaction::input('Production database password:', '', true);
-        
+
         $this->dev_database = [];
 
         if(Interaction::input('Use the same database credentails for development? y or n (default: y):', 'y') == 'n') {
@@ -562,6 +562,10 @@ class Installation {
      */
     public function composer() {
         exec('composer global require "fxp/composer-asset-plugin:~1.0" --no-interaction && composer create-project --prefer-dist --stability=dev yiisoft/yii2-app-advanced "'.addslashes($this->project_folder).'" --no-interaction');
+
+        // Add extra composer setting for skipping patches of packets
+        $file = addslashes($this->project_folder).'/composer.json';
+        file_put_contents($file,str_replace('"extra": {',"\"extra\": {\n        \"asset-pattern-skip-version\": \"(-patch)\",",file_get_contents($file)));
     }
 
     /**
@@ -580,14 +584,14 @@ class Installation {
             }
 
             if(!is_array($currentConfig)) {
-                $currentConfig = [];  
+                $currentConfig = [];
             }
 
             $config = array_merge($currentConfig, Templates::get($template));
             $contents = <<<EOD
 <?php
 
-return 
+return
 EOD;
 
             $contents .= ArrayHelper::arrayToCode( $config, true ).';';
@@ -670,7 +674,7 @@ EOD;
                     $contents = <<<EOD
 <?php
 
-return 
+return
 EOD;
 
                     $contents .= ArrayHelper::arrayToCode($config, true).';';
@@ -682,8 +686,8 @@ EOD;
         $cd = 'cd '.CURRENT_PATH . DS . $this->project_folder . DS;
         exec($cd.' && php yii --env=Production --overwrite=All');
     }
-    
-    
+
+
    /**
     * Usage
     */
@@ -703,14 +707,14 @@ EOD;
             }
 
             if(!is_array($currentConfig)) {
-                $currentConfig = [];  
+                $currentConfig = [];
             }
 
             $config = array_merge($currentConfig, Templates::get($template));
             $contents = <<<EOD
 <?php
 
-return 
+return
 EOD;
 
             $contents .= ArrayHelper::arrayToCode( $config, true ).';';
@@ -725,12 +729,11 @@ EOD;
                 $this->email['from'],
                 $this->email['to']
             ], $contents);
-            
-            
+
+
             file_put_contents($file, $contents);
         }
     }
 }
 
 $installation = new Installation();
-
